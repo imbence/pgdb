@@ -14,7 +14,7 @@ This is a small utility package for personal and internal use — but feel free 
 ## Installation
 
 ```bash
-go get github.com/iambence/pg_db
+go get github.com/imbence/pg_db
 ````
 
 ## Usage
