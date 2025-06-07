@@ -1,4 +1,4 @@
-module github.com/imbence/pg_db
+module github.com/imbence/pgdb
 
 go 1.24.1
 

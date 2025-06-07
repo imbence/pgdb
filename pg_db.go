@@ -1,4 +1,4 @@
-package pg_db
+package pgdb
 
 import (
 	"context"

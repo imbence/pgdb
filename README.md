@@ -1,4 +1,4 @@
-# pg_db
+# pgdb
 
 Simple helper package to insert and upsert data into PostgreSQL using [Bun ORM](https://bun.uptrace.dev/) in Go.
 
@@ -14,7 +14,7 @@ This is a small utility package for personal and internal use — but feel free 
 ## Installation
 
 ```bash
-go get github.com/imbence/pg_db
+go get github.com/imbence/pgdb
 ````
 
 ## Usage
@@ -23,11 +23,11 @@ go get github.com/imbence/pg_db
 package main
 import (
     "fmt"
-    "github.com/imbence/pg_db"
+    "github.com/imbence/pgdb"
 )
 
 func main() {
-    err := pg_db.ConnectToDb("postgres://user:pass@host:5432/dbname?sslmode=disable")
+    err := pgdb.ConnectToDb("postgres://user:pass@host:5432/dbname?sslmode=disable")
     if err != nil {
         panic(err)
     }
@@ -43,7 +43,7 @@ func main() {
         {ID: 2, Name: "bar", Value: 200},
     }
 
-    rows, err := pg_db.ToDb(data, "my_table", "public")
+    rows, err := pgdb.ToDb(data, "my_table", "public")
     if err != nil {
         panic(err)
     }
