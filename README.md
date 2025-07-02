@@ -10,44 +10,10 @@ This is a small utility package for personal and internal use — but feel free 
 - Generic `ToDb` function to insert or upsert slices of data
 - Automatically builds `ON CONFLICT DO UPDATE` clause based on primary key and columns
 - No hardcoding of column names — uses `information_schema` dynamically
+- set DEBUG_SQL=true to log SQL queries for debugging
 
 ## Installation
 
 ```bash
 go get github.com/imbence/pgdb
 ````
-
-## Usage
-
-```go
-package main
-import (
-    "fmt"
-    "github.com/imbence/pgdb"
-)
-
-func main() {
-    err := pgdb.ConnectToDb("postgres://user:pass@host:5432/dbname?sslmode=disable")
-    if err != nil {
-        panic(err)
-    }
-
-    type MyTable struct {
-        ID    int    `bun:"id,pk"`
-        Name  string `bun:"name"`
-        Value int    `bun:"value"`
-    }
-
-    data := []MyTable{
-        {ID: 1, Name: "foo", Value: 100},
-        {ID: 2, Name: "bar", Value: 200},
-    }
-
-    rows, err := pgdb.ToDb(data, "my_table", "public")
-    if err != nil {
-        panic(err)
-    }
-
-    fmt.Printf("Inserted/Updated %d rows\n", rows)
-}
-```

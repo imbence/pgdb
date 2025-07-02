@@ -9,29 +9,27 @@ import (
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
 	"github.com/uptrace/bun/extra/bundebug"
+	"os"
 	"strings"
 )
 
-var (
-	DB  *bun.DB
-	Ctx context.Context
-)
-
-func ConnectToDb(dbUrl string) error {
+func ConnectToDb(dbUrl string) (error, bun.DB, context.Context) {
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dbUrl)))
-	DB = bun.NewDB(sqldb, pgdialect.New())
+	var DB = bun.NewDB(sqldb, pgdialect.New())
 	if err := DB.Ping(); err != nil {
-		return err
+		return err, *DB, nil
 	}
-	DB.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
-	Ctx = context.Background()
-	return nil
+	if os.Getenv("DEBUG_SQL") == "true" {
+		DB.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
+	}
+	var Ctx = context.Background()
+	return nil, *DB, Ctx
 }
 
-func ToDb[T any](data []T, table string, schema string) (int64, error) {
+func ToDb[T any](Ctx context.Context, DB bun.DB, data []T, table string, schema string) (int64, error) {
 	modelTableExpr := fmt.Sprintf("%s.%s", schema, table)
 
-	onConflictString, primaryKeyString, err := getTableColumns(table, schema)
+	onConflictString, primaryKeyString, err := getTableColumns(Ctx, DB, table, schema)
 	if err != nil {
 		return 0, err
 	}
@@ -47,7 +45,7 @@ func ToDb[T any](data []T, table string, schema string) (int64, error) {
 	return sqlRes.RowsAffected()
 }
 
-func getTableColumns(table, schema string) (string, string, error) {
+func getTableColumns(Ctx context.Context, DB bun.DB, table string, schema string) (string, string, error) {
 	var columns []string
 	var primaryKey []string
 
