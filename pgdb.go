@@ -13,6 +13,9 @@ import (
 	"strings"
 )
 
+type DB = bun.DB
+type Context = context.Context
+
 func ConnectToDb(dbUrl string) (error, bun.DB, context.Context) {
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dbUrl)))
 	var DB = bun.NewDB(sqldb, pgdialect.New())
