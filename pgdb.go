@@ -31,7 +31,7 @@ func ConnectToDb(dbUrl string) (error, DB, Context) {
 	return nil, db, ctx
 }
 
-func ToDb[T any](Ctx context.Context, DB bun.DB, data []T, table string, schema string) (int64, error) {
+func ToDb[T any](Ctx context.Context, DB *bun.DB, data []T, table string, schema string) (int64, error) {
 	modelTableExpr := fmt.Sprintf("%s.%s", schema, table)
 
 	onConflictString, primaryKeyString, err := getTableColumns(Ctx, DB, table, schema)
@@ -50,7 +50,7 @@ func ToDb[T any](Ctx context.Context, DB bun.DB, data []T, table string, schema 
 	return sqlRes.RowsAffected()
 }
 
-func getTableColumns(Ctx context.Context, DB bun.DB, table string, schema string) (string, string, error) {
+func getTableColumns(Ctx context.Context, DB *bun.DB, table string, schema string) (string, string, error) {
 	var columns []string
 	var primaryKey []string
 
