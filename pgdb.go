@@ -13,20 +13,20 @@ import (
 	"strings"
 )
 
-type DB = bun.DB
+type DB = *bun.DB
 type Context = context.Context
 
-func ConnectToDb(dbUrl string) (error, bun.DB, context.Context) {
+func ConnectToDb(dbUrl string) (error, DB, Context) {
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dbUrl)))
-	var DB = bun.NewDB(sqldb, pgdialect.New())
-	if err := DB.Ping(); err != nil {
-		return err, *DB, nil
+	db := bun.NewDB(sqldb, pgdialect.New())
+	if err := db.Ping(); err != nil {
+		return err, nil, nil
 	}
 	if os.Getenv("DEBUG_SQL") == "true" {
-		DB.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
+		db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 	}
-	var Ctx = context.Background()
-	return nil, *DB, Ctx
+	ctx := context.Background()
+	return nil, db, ctx
 }
 
 func ToDb[T any](Ctx context.Context, DB bun.DB, data []T, table string, schema string) (int64, error) {
